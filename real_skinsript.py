@@ -65,7 +65,7 @@ final_df = final_df[['product_name', 'product_type', 'matched_chemical', 'Skin_T
 final_df = final_df.drop_duplicates()
 
 # Streamlit app layout
-st.title("Skin Care Product Recommendation System")
+st.title("RoseSkin")
 
 # Get user input for skin type
 user_input = st.selectbox('What is your skin type?', ['Dry Skin', 'Oily Skin', 'Combination Skin', 'Normal Skin'])
