@@ -74,27 +74,24 @@ user_input = st.selectbox('What is your skin type?', ['Dry Skin', 'Oily Skin', '
 
 # %% Filter products based on the input skin type
 if user_input:
-    
-   filtered_products = final_df[final_df['Skin_Type'].str.contains(user_input, case=False, na=False)]
-   if filtered_products.empty:
-       
-      st.write("No products found for the specified skin type.")
-   else:
-      product_names = filtered_products['product_name'].tolist()
-      chemical_ingredients = filtered_products['matched_chemical'].str.strip().str.split(",").tolist()
-       
+    # Filter products based on the input skin type
+    filtered_products = final_df[final_df['Skin_Type'].str.contains(user_input, case=False, na=False)]
+    if filtered_products.empty:
+        st.write("No products found for the specified skin type.")
+    else:
+        product_names = filtered_products['product_name'].tolist()
+        chemical_ingredients = filtered_products['matched_chemical'].str.strip().str.split(",").tolist()
 
-    # Create bags of words (bow)
-    
-       def create_bow(chem_list):
-           bow = {}
-           if not isinstance(chem_list, float):
-               for chemical in chem_list:
-                   bow[chemical] = 1
+        # Create bags of words (bow)
+        def create_bow(chem_list):
+            bow = {}
+            if not isinstance(chem_list, float):
+                for chemical in chem_list:
+                    bow[chemical] = 1
             return bow
 
-    bags_of_words = [create_bow(chem_list) for chem_list in chemical_ingredients]
-    chem_df_bow = pd.DataFrame(bags_of_words, index=product_names).fillna(0)
+        bags_of_words = [create_bow(chem_list) for chem_list in chemical_ingredients]
+        chem_df_bow = pd.DataFrame(bags_of_words, index=product_names).fillna(0)
 
 
 # %% Check dimensions of chem_df_bow
