@@ -85,7 +85,7 @@ if user_input:
        
 
     # Create bags of words (bow)
-    def create_bow(chem_list):
+     def create_bow(chem_list):
         bow = {}
         if not isinstance(chem_list, float):
             for chemical in chem_list:
