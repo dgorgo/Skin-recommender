@@ -85,12 +85,13 @@ if user_input:
        
 
     # Create bags of words (bow)
-     def create_bow(chem_list):
-        bow = {}
-        if not isinstance(chem_list, float):
-            for chemical in chem_list:
-                bow[chemical] = 1
-        return bow
+    
+       def create_bow(chem_list):
+           bow = {}
+           if not isinstance(chem_list, float):
+               for chemical in chem_list:
+                   bow[chemical] = 1
+            return bow
 
     bags_of_words = [create_bow(chem_list) for chem_list in chemical_ingredients]
     chem_df_bow = pd.DataFrame(bags_of_words, index=product_names).fillna(0)
