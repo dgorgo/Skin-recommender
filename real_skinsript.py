@@ -6,6 +6,10 @@ from sklearn.decomposition import TruncatedSVD
 import scipy.sparse as sp
 import warnings
 warnings.filterwarnings("ignore")
+import streamlit as st
+from sklearn.feature_extraction.text import CountVectorizer
+
+
 
 # %%
 products = pd.read_csv('skincare_products_clean.csv')
@@ -60,16 +64,25 @@ final_df = final_df[['product_name', 'product_type', 'matched_chemical', 'Skin_T
 # %%
 final_df = final_df.drop_duplicates()
 
-# %% Get user input for skin type
-user_input = input('What is your skin type: ')
+# Streamlit app layout
+st.title("Skin Care Product Recommendation System")
+
+# Get user input for skin type
+user_input = st.selectbox('What is your skin type?', ['Dry Skin', 'Oily Skin', 'Combination Skin', 'Normal Skin'])
+#user_input = st.text_input('What is your skin type:')
+
 
 # %% Filter products based on the input skin type
-filtered_products = final_df[final_df['Skin_Type'].str.contains(user_input, case=False, na=False)]
-if filtered_products.empty:
-    print("No products found for the specified skin type.")
-else:
-    product_names = filtered_products['product_name'].tolist()
-    chemical_ingredients = filtered_products['matched_chemical'].str.strip().str.split(",").tolist()
+if user_input:
+    
+   filtered_products = final_df[final_df['Skin_Type'].str.contains(user_input, case=False, na=False)]
+   if filtered_products.empty:
+       
+      st.write("No products found for the specified skin type.")
+   else:
+      product_names = filtered_products['product_name'].tolist()
+      chemical_ingredients = filtered_products['matched_chemical'].str.strip().str.split(",").tolist()
+       
 
     # Create bags of words (bow)
     def create_bow(chem_list):
@@ -105,15 +118,26 @@ cosine_sim = cosine_similarity(reduced_chem_df_bow)
 similarity_df = pd.DataFrame(cosine_sim, index=chem_df_bow.index, columns=chem_df_bow.index)
 
 # %%
+# Get recommendations for a specific product in the filtered set
+product = st.selectbox('Select a product for recommendations:', product_names)
+if product:
+            product_index = similarity_df.index.get_loc(product)
+            top_10 = similarity_df.iloc[product_index].sort_values(ascending=False).iloc[1:11]
+
+            # Print the top 10 most similar products
+            st.write(f'Top 10 similar products to {product}:')
+            for similar_product in top_10.index:
+                st.write(similar_product)
+# %%
 
         #Get recommendations for a specific product in the filtered set
-product = product_names[0]  # Select the first product as a reference
-product_index = similarity_df.index.get_loc(product)
-top_10 = similarity_df.iloc[product_index].sort_values(ascending=False).iloc[1:11]
+#product = product_names[0]  # Select the first product as a reference
+#product_index = similarity_df.index.get_loc(product)
+#top_10 = similarity_df.iloc[product_index].sort_values(ascending=False).iloc[1:11]
 
 # %% Print the top 10 most similar products
-print(f'Top 10 similar products to {product}:')
-print(top_10)
+#print(f'Top 10 similar products to {product}:')
+#print(top_10)
 
 # %%
 
