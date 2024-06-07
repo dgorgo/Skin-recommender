@@ -40,9 +40,12 @@ final_df = final_df[['product_name', 'product_type', 'matched_chemical', 'Skin_T
 #The App
 st.title("RoseSkin")
 
-user_input = st.selectbox('What is your skin type?', ['Dry Skin', 'Oily Skin', 'Combination Skin', 'Normal Skin'])
+user_input = st.selectbox('What is your skin type?', ['Dry Skin', 'Oily Skin', 'Combination Skin', 'Normal Skin'], value=default_skin_type)
+default_skin_type = "Dry Skin"
+#user_input = st.text_input('Enter your skin type:', value=default_skin_type)
+recommend_button = st.button('Get Recommendations')
 
-if user_input:
+if recommend_button:
     filtered_products = final_df[final_df['Skin_Type'].str.contains(user_input, case=False, na=False)]
     
     if filtered_products.empty:
