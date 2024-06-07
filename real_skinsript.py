@@ -77,7 +77,7 @@ user_input = st.selectbox('What is your skin type?', ['Dry Skin', 'Oily Skin', '
     # Filter products based on the input skin type
 #    filtered_products = final_df[final_df['Skin_Type'].str.contains(user_input, case=False, na=False)]
   #  if filtered_products.empty:
-        st.write("No products found for the specified skin type.")
+  #      st.write("No products found for the specified skin type.")
 #    else:
   #      product_names = filtered_products['product_name'].tolist()
   #      chemical_ingredients = filtered_products['matched_chemical'].str.strip().str.split(",").tolist()
