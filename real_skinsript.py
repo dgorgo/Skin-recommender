@@ -73,16 +73,58 @@ user_input = st.selectbox('What is your skin type?', ['Dry Skin', 'Oily Skin', '
 
 
 # %% Filter products based on the input skin type
-if user_input:
+#if user_input:
     # Filter products based on the input skin type
+#    filtered_products = final_df[final_df['Skin_Type'].str.contains(user_input, case=False, na=False)]
+  #  if filtered_products.empty:
+        st.write("No products found for the specified skin type.")
+#    else:
+  #      product_names = filtered_products['product_name'].tolist()
+  #      chemical_ingredients = filtered_products['matched_chemical'].str.strip().str.split(",").tolist()
+
+        # Create bags of words (bow)
+   #     def create_bow(chem_list):
+      #      bow = {}
+       #     if not isinstance(chem_list, float):
+        #        for chemical in chem_list:
+         #           bow[chemical] = 1
+          #  return bow
+
+    #    bags_of_words = [create_bow(chem_list) for chem_list in chemical_ingredients]
+     #   chem_df_bow = pd.DataFrame(bags_of_words, index=product_names).fillna(0)
+
+
+# %% Check dimensions of chem_df_bow
+#num_features = chem_df_bow.shape[1]
+#if num_features < 2:
+ #       print("Not enough features for TruncatedSVD. Ensure the input data has sufficient variety.")
+#else:
+        #Transform Data to Sparse Matrix Format and Apply Dimensionality Reduction
+ #   sparse_chem_df_bow = sp.csr_matrix(chem_df_bow.values)
+
+# %% Print the number of features
+#num_features = chem_df_bow.shape[1]
+#print(f'Number of features: {num_features}')
+
+# %% Use TruncatedSVD to reduce dimensionality
+#n_components = min(10, num_features)
+#svd = TruncatedSVD(n_components=n_components, random_state=42)
+#reduced_chem_df_bow = svd.fit_transform(sparse_chem_df_bow)
+
+
+st.title("Skin Product Recommender")
+
+user_input = st.text_input('Enter your skin type:')
+
+if user_input:
     filtered_products = final_df[final_df['Skin_Type'].str.contains(user_input, case=False, na=False)]
+    
     if filtered_products.empty:
         st.write("No products found for the specified skin type.")
     else:
         product_names = filtered_products['product_name'].tolist()
         chemical_ingredients = filtered_products['matched_chemical'].str.strip().str.split(",").tolist()
 
-        # Create bags of words (bow)
         def create_bow(chem_list):
             bow = {}
             if not isinstance(chem_list, float):
@@ -93,23 +135,16 @@ if user_input:
         bags_of_words = [create_bow(chem_list) for chem_list in chemical_ingredients]
         chem_df_bow = pd.DataFrame(bags_of_words, index=product_names).fillna(0)
 
+        num_features = chem_df_bow.shape[1]
+        if num_features < 2:
+            st.write("Not enough features for TruncatedSVD. Ensure the input data has sufficient variety.")
+        else:
+            sparse_chem_df_bow = sp.csr_matrix(chem_df_bow.values)
+            n_components = min(10, num_features)
+            svd = TruncatedSVD(n_components=n_components, random_state=42)
+            reduced_chem_df_bow = svd.fit_transform(sparse_chem_df_bow)
 
-# %% Check dimensions of chem_df_bow
-num_features = chem_df_bow.shape[1]
-if num_features < 2:
-        print("Not enough features for TruncatedSVD. Ensure the input data has sufficient variety.")
-else:
-        #Transform Data to Sparse Matrix Format and Apply Dimensionality Reduction
-    sparse_chem_df_bow = sp.csr_matrix(chem_df_bow.values)
 
-# %% Print the number of features
-num_features = chem_df_bow.shape[1]
-print(f'Number of features: {num_features}')
-
-# %% Use TruncatedSVD to reduce dimensionality
-n_components = min(10, num_features)
-svd = TruncatedSVD(n_components=n_components, random_state=42)
-reduced_chem_df_bow = svd.fit_transform(sparse_chem_df_bow)
 
 # %% Calculate cosine similarity on the reduced data
 cosine_sim = cosine_similarity(reduced_chem_df_bow)
