@@ -40,7 +40,7 @@ final_df = final_df[['product_name', 'product_type', 'matched_chemical', 'Skin_T
 #The App
 st.title("RoseSkin")
 
-user_input = st.selectbox('Tell Me Your Skin Type:')
+user_input = st.selectbox('What is your skin type?', ['Dry Skin', 'Oily Skin', 'Combination Skin', 'Normal Skin'])
 
 if user_input:
     filtered_products = final_df[final_df['Skin_Type'].str.contains(user_input, case=False, na=False)]
