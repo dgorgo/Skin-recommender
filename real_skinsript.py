@@ -13,18 +13,6 @@ products = pd.read_csv('skincare_products_clean.csv')
 chem_df = pd.read_csv('chemicals.csv')
 
 
-# %%
-products
-
-# %%
-chem_df
-
-# %%
-products.size
-
-# %%
-chem_df.size
-
 
 # Remove duplicates
 products_df = products.drop_duplicates()
