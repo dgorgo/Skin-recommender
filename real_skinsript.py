@@ -12,6 +12,20 @@ warnings.filterwarnings("ignore")
 products = pd.read_csv('skincare_products_clean.csv')
 chem_df = pd.read_csv('chemicals.csv')
 
+
+# %%
+products
+
+# %%
+chem_df
+
+# %%
+products.size
+
+# %%
+chem_df.size
+
+
 # Remove duplicates
 products_df = products.drop_duplicates()
 chem_df = chem_df.drop_duplicates()
@@ -25,7 +39,7 @@ def find_matches(ingredient, chemicals):
 
 products_df['matched_chemical'] = products_df['clean_ingreds'].apply(lambda x: find_matches(x, chem_df['Chemical_Name']))
 
-# Merge datasets
+#Merge skin data, and products data
 skin_products = pd.merge(products_df, chem_df, how='left', left_on='matched_chemical', right_on='Chemical_Name')
 skin_products = skin_products.drop(columns=['product_url', 'price', 'Chemical_Name'])
 skin_products.dropna(inplace=True)
@@ -35,10 +49,10 @@ grouped_chem = skin_products.groupby('clean_ingreds')['matched_chemical'].apply(
 final_df = skin_products.merge(grouped_chem, on='matched_chemical', how='left')
 final_df = final_df[['product_name', 'product_type', 'matched_chemical', 'Skin_Type', 'Description']].drop_duplicates()
 
-# Streamlit app
-st.title("Skin Product Recommender")
+#The App
+st.title("RoseSkin")
 
-user_input = st.text_input('Enter your skin type:')
+user_input = st.text_input('Tell Me Your Skin Type:')
 
 if user_input:
     filtered_products = final_df[final_df['Skin_Type'].str.contains(user_input, case=False, na=False)]
