@@ -37,7 +37,7 @@ products_df.size
 # %%
 chem_df.size
 
-# %% Function to find matches
+# %%find matches
 def find_matches(ingredient, chemicals):
     for chemical in chemicals:
         if chemical.lower() in ingredient.lower():
@@ -46,7 +46,7 @@ def find_matches(ingredient, chemicals):
 
 products_df['matched_chemical'] = products_df['clean_ingreds'].apply(lambda x: find_matches(x, chem_df['Chemical_Name']))
 
-# %% Merge datasets
+# %% Merge datasets (products et chemicals)
 skin_products = pd.merge(products_df, chem_df, how='left', left_on='matched_chemical', right_on='Chemical_Name')
 skin_products = skin_products.drop(columns=['product_url', 'price', 'Chemical_Name'])
 skin_products.dropna(inplace=True)
@@ -54,7 +54,7 @@ skin_products.dropna(inplace=True)
 # %% Remove duplicates after merging
 skin_products = skin_products.drop_duplicates()
 
-# %%
+# %% #group the chemicals rom the 2 df
 
 grouped_chem = skin_products.groupby('clean_ingreds')['matched_chemical'].apply(lambda x: ', '.join(x)).reset_index()
 final_df = skin_products.merge(grouped_chem, on='matched_chemical', how='left')
@@ -64,17 +64,16 @@ final_df = final_df[['product_name', 'product_type', 'matched_chemical', 'Skin_T
 # %%
 final_df = final_df.drop_duplicates()
 
-# Streamlit app layout
+# the app layout
 st.title("RoseSkin")
 
-# Get user input for skin type
+# user input
 user_input = st.selectbox('What is your skin type?', ['Dry Skin', 'Oily Skin', 'Combination Skin', 'Normal Skin'])
 #user_input = st.text_input('What is your skin type:')
 
 
-# %% Filter products based on the input skin type
+# %%products based on the input skin type
 if user_input:
-    # Filter products based on the input skin type
     filtered_products = final_df[final_df['Skin_Type'].str.contains(user_input, case=False, na=False)]
     if filtered_products.empty:
         st.write("No products found for the specified skin type.")
@@ -82,7 +81,7 @@ if user_input:
         product_names = filtered_products['product_name'].tolist()
         chemical_ingredients = filtered_products['matched_chemical'].str.strip().str.split(",").tolist()
 
-        # Create bags of words (bow)
+        #Creating bags of words (bow)
         def create_bow(chem_list):
             bow = {}
             if not isinstance(chem_list, float):
@@ -94,7 +93,7 @@ if user_input:
         chem_df_bow = pd.DataFrame(bags_of_words, index=product_names).fillna(0)
 
 
-# %% Check dimensions of chem_df_bow
+# %%Check dimensions of chem_df_bow
 num_features = chem_df_bow.shape[1]
 if num_features < 2:
         print("Not enough features for TruncatedSVD. Ensure the input data has sufficient variety.")
@@ -106,19 +105,18 @@ else:
 num_features = chem_df_bow.shape[1]
 print(f'Number of features: {num_features}')
 
-# %% Use TruncatedSVD to reduce dimensionality
+# %%Use TruncatedSVD to reduce dimensionality
 n_components = min(10, num_features)
 svd = TruncatedSVD(n_components=n_components, random_state=42)
 reduced_chem_df_bow = svd.fit_transform(sparse_chem_df_bow)
 
 
 
-# %% Calculate cosine similarity on the reduced data
+# %%Calc cosine similarity on the reduced data
 cosine_sim = cosine_similarity(reduced_chem_df_bow)
 similarity_df = pd.DataFrame(cosine_sim, index=chem_df_bow.index, columns=chem_df_bow.index)
 
-# %%
-# Get recommendations for a specific product in the filtered set
+# %% #Get recommendations for a specific product in the filtered set
 product = st.selectbox('Select a product for recommendations:', product_names)
 if product:
             product_index = similarity_df.index.get_loc(product)
