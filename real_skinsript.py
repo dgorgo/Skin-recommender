@@ -8,17 +8,17 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-# Load data
+#Data
 products = pd.read_csv('skincare_products_clean.csv')
 chem_df = pd.read_csv('chemicals.csv')
 
 
 
-# Remove duplicates
+#Remove duplicates
 products_df = products.drop_duplicates()
 chem_df = chem_df.drop_duplicates()
 
-# Function to find matches
+#Find matches
 def find_matches(ingredient, chemicals):
     for chemical in chemicals:
         if chemical.lower() in ingredient.lower():
@@ -83,3 +83,7 @@ if recommend_button:
             st.write(f'Top 10 similar products to {product}:')
             for item in top_10.index:
                 st.write(item)
+
+#IG link
+if st.button('Buy all your skin needs here'):
+    st.write("[Buy all your skin needs here](https://www.instagram.com/roseskin_beaut?igsh=MXJ5OW9tdDZpcDAydw%3D%3D&utm_source=qr)")
