@@ -86,4 +86,4 @@ if recommend_button:
 
 #IG link
 if st.button('Buy all your skin needs here'):
-    st.write("[Buy all your skin needs here](https://www.instagram.com/roseskin_beaut?igsh=MXJ5OW9tdDZpcDAydw%3D%3D&utm_source=qr)")
+    st.write("[Shop Roseskin](https://www.instagram.com/roseskin_beaut?igsh=MXJ5OW9tdDZpcDAydw%3D%3D&utm_source=qr)")
